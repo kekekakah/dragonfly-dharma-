@@ -33,14 +33,21 @@ jobs:
       - name: Build Astro site + Pagefind index
         run: pnpm run build
         # This runs: astro build && node scripts/build-search.mjs
-        # Pagefind indexes all pages after each build, keeping search current.
+        # Pagefind re-indexes all pages after each build, keeping search current.
+
+      - name: Install Vercel CLI (latest)
+        run: npm install -g vercel@latest
 
       - name: Deploy to Vercel (Production)
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-        uses: amondnet/vercel-action@v25
-        with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-          vercel-args: '--prod'
-          working-directory: ./
+        run: vercel deploy --prebuilt --prod --token ${{ secrets.VERCEL_TOKEN }} --yes
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+      - name: Deploy to Vercel (Preview — PRs only)
+        if: github.event_name == 'pull_request'
+        run: vercel deploy --prebuilt --token ${{ secrets.VERCEL_TOKEN }} --yes
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}

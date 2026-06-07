@@ -1,0 +1,137 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+const allEntries = await getCollection('treasury', ({ data }) => !data.draft);
+allEntries.sort((a, b) => b.data.publishDate.getTime() - a.data.publishDate.getTime());
+
+const seasonColors: Record<string, string> = {
+  spring: '#6b8f5e',
+  summer: '#c0392b',
+  'late-summer': '#c8860a',
+  autumn: '#b05c1a',
+  winter: '#3a5a7c',
+  all: '#5a4e3a',
+};
+
+const seasonLabels: Record<string, string> = {
+  spring: 'Spring · 春',
+  summer: 'Summer · 夏',
+  'late-summer': 'Late Summer · 长夏',
+  autumn: 'Autumn · 秋',
+  winter: 'Winter · 冬',
+  all: 'All Seasons · 四时',
+};
+
+const allTopics = [...new Set(allEntries.flatMap(e => e.data.topic))].sort();
+const allFoods = [...new Set(allEntries.flatMap(e => e.data.food))].sort();
+---
+
+<BaseLayout
+  title="Treasury — All Entries"
+  titleZh="食养文库"
+  description="Browse all entries in the Dragonfly Dharma 食养 Treasury. Classical Chinese seasonal food wisdom, bilingual."
+  lang="en"
+>
+  <div class="page-hero" style="padding: var(--space-2xl) 0 var(--space-xl);">
+    <div class="container">
+      <h1 class="page-hero__title-zh">食养文库</h1>
+      <p class="page-hero__title-en">The Treasury — All Entries</p>
+      <p class="page-hero__desc">
+        Browse classical readings on seasonal nourishment. Use the filters below to find entries by season, food, or topic.
+      </p>
+    </div>
+  </div>
+
+  <div class="filter-bar">
+    <div class="container-wide">
+      <div class="filter-bar__inner">
+        <div class="filter-group">
+          <label for="season-filter">Season · 季节</label>
+          <select id="season-filter" onchange="filterCards()">
+            <option value="">All · 全部</option>
+            <option value="spring">Spring · 春</option>
+            <option value="summer">Summer · 夏</option>
+            <option value="late-summer">Late Summer · 长夏</option>
+            <option value="autumn">Autumn · 秋</option>
+            <option value="winter">Winter · 冬</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label for="topic-filter">Topic · 主题</label>
+          <select id="topic-filter" onchange="filterCards()">
+            <option value="">All · 全部</option>
+            {allTopics.map(t => <option value={t}>{t}</option>)}
+          </select>
+        </div>
+        <div class="filter-group">
+          <label for="food-filter">Food · 食材</label>
+          <select id="food-filter" onchange="filterCards()">
+            <option value="">All · 全部</option>
+            {allFoods.map(f => <option value={f}>{f}</option>)}
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <section>
+    <div class="container-wide">
+      <div class="card-grid" id="card-grid">
+        {allEntries.map(entry => (
+          <a
+            href={`/treasury/${entry.id}/`}
+            class="card"
+            data-season={entry.data.season}
+            data-topics={entry.data.topic.join(',')}
+            data-foods={entry.data.food.join(',')}
+            style={`--season-color: ${seasonColors[entry.data.season] ?? '#5a4e3a'}`}
+          >
+            <span class="card__season-badge">{seasonLabels[entry.data.season] ?? entry.data.season}</span>
+            <h2 class="card__title-zh">{entry.data.titleZh}</h2>
+            <p class="card__title-en">{entry.data.title}</p>
+            <p class="card__summary">{entry.data.summary}</p>
+            <div class="card__tags">
+              {entry.data.food.slice(0, 3).map((f: string) => (
+                <span class="card__tag">{f}</span>
+              ))}
+              {entry.data.topic.slice(0, 2).map((t: string) => (
+                <span class="card__tag">{t}</span>
+              ))}
+            </div>
+          </a>
+        ))}
+      </div>
+      <p id="no-results" style="display:none; text-align:center; padding: 3rem; color: var(--color-ink-light); font-family: var(--font-serif-zh);">
+        暂无符合条件的内容 · No matching entries found.
+      </p>
+    </div>
+  </section>
+
+  <script is:inline>
+    function filterCards() {
+      const season = document.getElementById('season-filter').value;
+      const topic = document.getElementById('topic-filter').value;
+      const food = document.getElementById('food-filter').value;
+      const cards = document.querySelectorAll('#card-grid .card');
+      let visible = 0;
+      cards.forEach(card => {
+        const matchSeason = !season || card.dataset.season === season;
+        const matchTopic = !topic || (card.dataset.topics || '').split(',').includes(topic);
+        const matchFood = !food || (card.dataset.foods || '').split(',').includes(food);
+        const show = matchSeason && matchTopic && matchFood;
+        card.style.display = show ? '' : 'none';
+        if (show) visible++;
+      });
+      document.getElementById('no-results').style.display = visible === 0 ? 'block' : 'none';
+    }
+    window.addEventListener('DOMContentLoaded', () => {
+      const params = new URLSearchParams(window.location.search);
+      const season = params.get('season');
+      if (season) {
+        const sel = document.getElementById('season-filter');
+        if (sel) { sel.value = season; filterCards(); }
+      }
+    });
+  </script>
+</BaseLayout>

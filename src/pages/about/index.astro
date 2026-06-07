@@ -1,0 +1,91 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="About the Treasury"
+  titleZh="关于食养文库"
+  description="About the Dragonfly Dharma 食养 Treasury — a bilingual educational resource on classical Chinese seasonal food wisdom."
+  lang="en"
+>
+  <div class="page-hero" style="padding: var(--space-2xl) 0 var(--space-xl);">
+    <div class="container">
+      <h1 class="page-hero__title-zh">关于食养文库</h1>
+      <p class="page-hero__title-en">About the Treasury</p>
+    </div>
+  </div>
+
+  <div class="container" style="padding-top: var(--space-2xl); padding-bottom: var(--space-3xl);">
+
+    <section class="article-section">
+      <div class="article-section__label">
+        <span class="article-section__label-zh">项目简介</span>
+        <span class="article-section__label-en">About This Project</span>
+      </div>
+      <div class="article-section__content">
+        <p>
+          The <strong>Dragonfly Dharma 食养 Treasury</strong> is a bilingual educational resource
+          dedicated to sharing classical Chinese wisdom on seasonal nourishment — 食养 (<em>shí yǎng</em>),
+          the art of nourishing life through food aligned with the rhythms of nature and the seasons.
+        </p>
+        <p>
+          Our content draws from foundational classical texts including the <em>Huangdi Neijing</em>
+          (黄帝内经), the <em>Shennong Bencao Jing</em> (神农本草经), and other canonical works of
+          Chinese medical and culinary literature. Each entry presents a verbatim classical passage,
+          a bilingual reading, and a practical note for daily life.
+        </p>
+        <p>
+          This project is an educational and cultural endeavour. It is not a medical resource, and
+          nothing here constitutes medical advice, diagnosis, or treatment.
+        </p>
+      </div>
+    </section>
+
+    <div class="ornament-divider">· · ·</div>
+
+    <section class="article-section">
+      <div class="article-section__label">
+        <span class="article-section__label-zh">关于本站</span>
+        <span class="article-section__label-en">About This Site</span>
+      </div>
+      <div class="article-section__content">
+        <p>
+          关于本站：蜻蜓法门食养文库是一个双语教育资源，致力于分享中国传统节气食养智慧。
+          内容取材自《黄帝内经》《神农本草经》等经典典籍，以教育与文化传播为目的。
+        </p>
+        <p>
+          本站所有内容仅供教育与文化参考，不构成医疗建议、诊断或治疗建议。
+          如有健康问题，请咨询持牌专业医疗人士。
+        </p>
+      </div>
+    </section>
+
+    <div class="ornament-divider">· · ·</div>
+
+    <section class="article-section">
+      <div class="article-section__label">
+        <span class="article-section__label-zh">内容框架</span>
+        <span class="article-section__label-en">Content Framework</span>
+      </div>
+      <div class="article-section__content">
+        <p>Each Treasury entry follows a consistent structure:</p>
+        <ul style="list-style: disc; padding-left: 1.5rem; color: var(--color-ink-muted); font-family: var(--font-sans); line-height: 1.8;">
+          <li><strong>Classical Quote Block</strong> — a verbatim passage from the source text, in classical Chinese with source citation</li>
+          <li><strong>English Reading</strong> — a contextual, educational reading of the passage</li>
+          <li><strong>白话 Explanation</strong> — a plain-language Chinese explanation</li>
+          <li><strong>In Practice / 在生活中</strong> — a short, practical note for daily life</li>
+          <li><strong>Sources & Disclaimer</strong> — full citation and educational disclaimer</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Disclaimer box -->
+    <div class="disclaimer" style="margin-top: var(--space-2xl);" role="note">
+      <strong>Educational Disclaimer · 教育声明</strong>
+      Educational &amp; cultural reference only — not medical advice, diagnosis, or treatment.
+      Consult a licensed practitioner. ·
+      仅供教育与文化参考，非医疗建议、诊断或治疗，请咨询持牌专业人士。
+    </div>
+
+  </div>
+</BaseLayout>

@@ -1,0 +1,121 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+const allEntries = await getCollection('treasury', ({ data }) => !data.draft);
+allEntries.sort((a, b) => b.data.publishDate.getTime() - a.data.publishDate.getTime());
+
+const seasonColors: Record<string, string> = {
+  spring: '#6b8f5e',
+  summer: '#c0392b',
+  'late-summer': '#c8860a',
+  autumn: '#b05c1a',
+  winter: '#3a5a7c',
+  all: '#5a4e3a',
+};
+
+const seasonLabels: Record<string, string> = {
+  spring: '春季',
+  summer: '夏季',
+  'late-summer': '长夏',
+  autumn: '秋季',
+  winter: '冬季',
+  all: '四时',
+};
+---
+
+<BaseLayout
+  title="Seasonal Food Wisdom Treasury"
+  titleZh="四時食養文庫"
+  description="蜻蜓法门食养文库 — 中国传统节气食养智慧双语教育资源。仅供教育与文化参考。"
+  lang="zh"
+>
+  <section class="page-hero">
+    <div class="container">
+      <p class="page-hero__subtitle">蜻蜓法门呈献</p>
+      <h1 class="page-hero__title-zh">四時食養文庫</h1>
+      <p class="page-hero__title-en">Seasonal Food Wisdom Treasury</p>
+      <p class="page-hero__desc">
+        中国传统节气食养智慧双语典藏 —— 取材自《黄帝内经》《神农本草经》等经典典籍。
+        仅供教育与文化参考。
+      </p>
+      <div class="search-wrapper">
+        <div id="pagefind-search" aria-label="搜索文库"></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="filter-bar">
+    <div class="container-wide">
+      <div class="filter-bar__inner">
+        <span style="font-size: 0.8rem; color: var(--color-ink-light); font-family: var(--font-sans);">按季节筛选：</span>
+        <a href="/zh/treasury/" class="filter-tag filter-tag--season">全部</a>
+        <a href="/zh/treasury/?season=spring" class="filter-tag filter-tag--season">春季</a>
+        <a href="/zh/treasury/?season=summer" class="filter-tag filter-tag--season">夏季</a>
+        <a href="/zh/treasury/?season=late-summer" class="filter-tag filter-tag--season">长夏</a>
+        <a href="/zh/treasury/?season=autumn" class="filter-tag filter-tag--season">秋季</a>
+        <a href="/zh/treasury/?season=winter" class="filter-tag filter-tag--season">冬季</a>
+      </div>
+    </div>
+  </div>
+
+  <section>
+    <div class="container-wide">
+      {allEntries.length > 0 ? (
+        <div class="card-grid">
+          {allEntries.map(entry => (
+            <a
+              href={`/zh/treasury/${entry.id}/`}
+              class="card"
+              data-season={entry.data.season}
+              style={`--season-color: ${seasonColors[entry.data.season] ?? '#5a4e3a'}`}
+            >
+              <span class="card__season-badge">{seasonLabels[entry.data.season] ?? entry.data.season}</span>
+              <h2 class="card__title-zh">{entry.data.titleZh}</h2>
+              <p class="card__title-en">{entry.data.title}</p>
+              <p class="card__summary">{entry.data.summaryZh}</p>
+              <div class="card__tags">
+                {entry.data.food.slice(0, 3).map((f: string) => (
+                  <span class="card__tag">{f}</span>
+                ))}
+                {entry.data.topic.slice(0, 2).map((t: string) => (
+                  <span class="card__tag">{t}</span>
+                ))}
+              </div>
+            </a>
+          ))}
+        </div>
+      ) : (
+        <div style="text-align: center; padding: 4rem 0; color: var(--color-ink-light);">
+          <p style="font-family: var(--font-serif-zh); font-size: 1.2rem; margin-bottom: 0.5rem;">文库建设中</p>
+          <p style="font-family: var(--font-serif-en); font-style: italic;">Treasury content coming soon.</p>
+        </div>
+      )}
+    </div>
+  </section>
+
+  <div class="ornament-divider">· · ·</div>
+
+  <!-- Community CTA Placeholder -->
+  <!-- ╔══════════════════════════════════════════════════════════╗ -->
+  <!-- ║  KAJABI / MAKE.COM INTEGRATION PLACEHOLDER              ║ -->
+  <!-- ║  Wire this email form to Kajabi via Make.com LATER.     ║ -->
+  <!-- ╚══════════════════════════════════════════════════════════╝ -->
+  <section style="padding: 0 0 var(--space-3xl);">
+    <div class="container">
+      <div class="community-cta">
+        <span class="community-cta__placeholder-badge">Kajabi CTA — 占位符</span>
+        <h2 class="community-cta__title-zh">加入食养社群</h2>
+        <p class="community-cta__title-en">Join the Seasonal Nourishment Community</p>
+        <p class="community-cta__desc">订阅每月节气食养通讯，获取食谱、典籍解读与实践指南。</p>
+        <form class="email-capture" onsubmit="return false;" aria-label="邮件订阅占位符">
+          <input type="email" placeholder="您的电子邮件" aria-label="电子邮件地址" disabled />
+          <button type="submit" class="btn" disabled>即将开放</button>
+        </form>
+        <p style="font-size: 0.72rem; color: var(--color-ink-light); margin-top: 0.75rem; margin-bottom: 0;">
+          （此功能即将上线，敬请期待 — 占位符，尚未接入 Kajabi）
+        </p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

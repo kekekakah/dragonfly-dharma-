@@ -1,0 +1,131 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+const allEntries = await getCollection('treasury', ({ data }) => !data.draft);
+allEntries.sort((a, b) => b.data.publishDate.getTime() - a.data.publishDate.getTime());
+
+const seasonColors: Record<string, string> = {
+  spring: '#6b8f5e',
+  summer: '#c0392b',
+  'late-summer': '#c8860a',
+  autumn: '#b05c1a',
+  winter: '#3a5a7c',
+  all: '#5a4e3a',
+};
+
+const seasonLabels: Record<string, string> = {
+  spring: 'Spring · 春',
+  summer: 'Summer · 夏',
+  'late-summer': 'Late Summer · 长夏',
+  autumn: 'Autumn · 秋',
+  winter: 'Winter · 冬',
+  all: 'All Seasons · 四时',
+};
+---
+
+<BaseLayout
+  title="Seasonal Food Wisdom Treasury"
+  titleZh="四時食養文庫"
+  description="Dragonfly Dharma 食养 Treasury — Bilingual classical Chinese seasonal food wisdom. Educational & cultural reference only."
+  lang="en"
+>
+  <!-- Hero Section -->
+  <section class="page-hero">
+    <div class="container">
+      <p class="page-hero__subtitle">蜻蜓法门呈献</p>
+      <h1 class="page-hero__title-zh">四時食養文庫</h1>
+      <p class="page-hero__title-en">Seasonal Food Wisdom Treasury</p>
+      <p class="page-hero__desc">
+        Classical Chinese wisdom on seasonal nourishment — bilingual readings from the
+        <em>Huangdi Neijing</em>, <em>Shennong Bencao Jing</em>, and related texts.
+        Educational &amp; cultural reference only.
+      </p>
+
+      <!-- Pagefind Search -->
+      <div class="search-wrapper">
+        <div id="pagefind-search" aria-label="Search the treasury"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Filter Bar -->
+  <div class="filter-bar">
+    <div class="container-wide">
+      <div class="filter-bar__inner">
+        <span style="font-size: 0.8rem; color: var(--color-ink-light); font-family: var(--font-sans);">Filter by season:</span>
+        <a href="/treasury/" class="filter-tag filter-tag--season">All · 全部</a>
+        <a href="/treasury/?season=spring" class="filter-tag filter-tag--season">Spring · 春</a>
+        <a href="/treasury/?season=summer" class="filter-tag filter-tag--season">Summer · 夏</a>
+        <a href="/treasury/?season=late-summer" class="filter-tag filter-tag--season">Late Summer · 长夏</a>
+        <a href="/treasury/?season=autumn" class="filter-tag filter-tag--season">Autumn · 秋</a>
+        <a href="/treasury/?season=winter" class="filter-tag filter-tag--season">Winter · 冬</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Card Grid -->
+  <section>
+    <div class="container-wide">
+      {allEntries.length > 0 ? (
+        <div class="card-grid">
+          {allEntries.map(entry => (
+            <a
+              href={`/treasury/${entry.id}/`}
+              class="card"
+              data-season={entry.data.season}
+              style={`--season-color: ${seasonColors[entry.data.season] ?? '#5a4e3a'}`}
+            >
+              <span class="card__season-badge">{seasonLabels[entry.data.season] ?? entry.data.season}</span>
+              <h2 class="card__title-zh">{entry.data.titleZh}</h2>
+              <p class="card__title-en">{entry.data.title}</p>
+              <p class="card__summary">{entry.data.summary}</p>
+              <div class="card__tags">
+                {entry.data.food.slice(0, 3).map((f: string) => (
+                  <span class="card__tag">{f}</span>
+                ))}
+                {entry.data.topic.slice(0, 2).map((t: string) => (
+                  <span class="card__tag">{t}</span>
+                ))}
+              </div>
+            </a>
+          ))}
+        </div>
+      ) : (
+        <div style="text-align: center; padding: 4rem 0; color: var(--color-ink-light);">
+          <p style="font-family: var(--font-serif-zh); font-size: 1.2rem; margin-bottom: 0.5rem;">文库建设中</p>
+          <p style="font-family: var(--font-serif-en); font-style: italic;">Treasury content coming soon.</p>
+        </div>
+      )}
+    </div>
+  </section>
+
+  <!-- Ornament -->
+  <div class="ornament-divider">· · ·</div>
+
+  <!-- Community CTA Placeholder -->
+  <!-- ╔══════════════════════════════════════════════════════════╗ -->
+  <!-- ║  KAJABI / MAKE.COM INTEGRATION PLACEHOLDER              ║ -->
+  <!-- ║  Wire this email form to Kajabi via Make.com LATER.     ║ -->
+  <!-- ╚══════════════════════════════════════════════════════════╝ -->
+  <section style="padding: 0 0 var(--space-3xl);">
+    <div class="container">
+      <div class="community-cta">
+        <span class="community-cta__placeholder-badge">Kajabi CTA — Placeholder</span>
+        <h2 class="community-cta__title-zh">加入食养社群</h2>
+        <p class="community-cta__title-en">Join the Seasonal Nourishment Community</p>
+        <p class="community-cta__desc">
+          Subscribe for monthly seasonal nourishment letters — classical readings, recipes, and practical guides.
+          订阅每月节气食养通讯。
+        </p>
+        <form class="email-capture" onsubmit="return false;" aria-label="Email signup placeholder">
+          <input type="email" placeholder="your@email.com" aria-label="Email address" disabled />
+          <button type="submit" class="btn" disabled>Coming Soon · 即将开放</button>
+        </form>
+        <p style="font-size: 0.72rem; color: var(--color-ink-light); margin-top: 0.75rem; margin-bottom: 0;">
+          (Kajabi integration via Make.com — placeholder only, not yet wired)
+        </p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

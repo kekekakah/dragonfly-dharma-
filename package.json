@@ -1,0 +1,20 @@
+{
+  "name": "dragonfly-dharma",
+  "type": "module",
+  "version": "0.1.0",
+  "description": "Dragonfly Dharma 食养 Treasury Hub — bilingual classical Chinese seasonal food wisdom",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build && node scripts/build-search.mjs",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/mdx": "^6.0.2",
+    "astro": "^6.4.4",
+    "pagefind": "^1.5.2"
+  }
+}

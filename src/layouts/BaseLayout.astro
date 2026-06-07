@@ -1,0 +1,143 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  titleZh?: string;
+  description?: string;
+  lang?: 'en' | 'zh';
+  ogImage?: string;
+}
+
+const {
+  title,
+  titleZh,
+  description = 'Dragonfly Dharma 食养 Treasury — A bilingual educational resource on classical Chinese seasonal food wisdom.',
+  lang = 'en',
+  ogImage,
+} = Astro.props;
+
+const currentPath = Astro.url.pathname;
+const isZh = lang === 'zh' || currentPath.startsWith('/zh/');
+const altLangPath = isZh
+  ? currentPath.replace(/^\/zh/, '') || '/'
+  : `/zh${currentPath}`;
+
+const fullTitle = titleZh
+  ? `${titleZh} · ${title} — Dragonfly Dharma 食养`
+  : `${title} — Dragonfly Dharma 食养`;
+---
+
+<!DOCTYPE html>
+<html lang={isZh ? 'zh-Hans' : 'en'}>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content={description} />
+  <meta name="robots" content="index, follow" />
+  
+  <!-- Open Graph -->
+  <meta property="og:title" content={fullTitle} />
+  <meta property="og:description" content={description} />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content={Astro.url.href} />
+  {ogImage && <meta property="og:image" content={ogImage} />}
+  
+  <!-- Hreflang for bilingual -->
+  <link rel="alternate" hreflang="en" href={isZh ? altLangPath : currentPath} />
+  <link rel="alternate" hreflang="zh-Hans" href={isZh ? currentPath : `/zh${currentPath}`} />
+  
+  <!-- Pagefind (loaded after build) -->
+  <link rel="stylesheet" href="/pagefind/pagefind-ui.css" />
+  
+  <title>{fullTitle}</title>
+</head>
+<body>
+  <!-- Site Header -->
+  <header class="site-header">
+    <div class="container-wide">
+      <div class="site-header__inner">
+        <a href={isZh ? '/zh/' : '/'} class="site-logo">
+          <span class="site-logo__en">Dragonfly Dharma</span>
+          <span class="site-logo__zh">蜻蜓法门 · 食养文库</span>
+        </a>
+        
+        <nav class="site-nav" aria-label="Main navigation">
+          <a href={isZh ? '/zh/' : '/'}>
+            {isZh ? '首页' : 'Home'}
+          </a>
+          <a href={isZh ? '/zh/treasury/' : '/treasury/'}>
+            {isZh ? '食养文库' : 'Treasury'}
+          </a>
+          <a href={isZh ? '/zh/browse/' : '/browse/'}>
+            {isZh ? '按类浏览' : 'Browse'}
+          </a>
+          <a href={isZh ? '/zh/about/' : '/about/'}>
+            {isZh ? '关于' : 'About'}
+          </a>
+        </nav>
+
+        <div class="lang-toggle" aria-label="Language toggle">
+          <a href={isZh ? altLangPath : currentPath} class={!isZh ? 'active' : ''}>EN</a>
+          <a href={isZh ? currentPath : `/zh${currentPath}`} class={isZh ? 'active' : ''}>中文</a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main>
+    <slot />
+  </main>
+
+  <!-- Site Footer -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="site-footer__inner">
+        <div class="site-footer__brand">
+          <a href={isZh ? '/zh/' : '/'} class="site-logo">
+            <span class="site-logo__en">Dragonfly Dharma</span>
+            <span class="site-logo__zh">蜻蜓法门 · 食养文库</span>
+          </a>
+          <p class="site-footer__desc">
+            {isZh
+              ? '以中国传统节气智慧为基础的双语教育资源。'
+              : 'A bilingual educational resource rooted in classical Chinese seasonal wisdom.'}
+          </p>
+        </div>
+
+        <div class="site-footer__links">
+          <h4>{isZh ? '快速导航' : 'Quick Links'}</h4>
+          <ul>
+            <li><a href={isZh ? '/zh/treasury/' : '/treasury/'}>{isZh ? '食养文库' : 'Treasury'}</a></li>
+            <li><a href={isZh ? '/zh/browse/' : '/browse/'}>{isZh ? '按类浏览' : 'Browse by Topic'}</a></li>
+            <li><a href={isZh ? '/zh/about/' : '/about/'}>{isZh ? '关于本站' : 'About'}</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Bilingual Disclaimer — required on every page -->
+      <div class="disclaimer" role="note" aria-label="Educational disclaimer">
+        <strong>{isZh ? '免责声明' : 'Disclaimer'}</strong>
+        Educational &amp; cultural reference only — not medical advice, diagnosis, or treatment.
+        Consult a licensed practitioner. ·
+        仅供教育与文化参考，非医疗建议、诊断或治疗，请咨询持牌专业人士。
+      </div>
+
+      <div class="site-footer__bottom">
+        <p>© {new Date().getFullYear()} Dragonfly Dharma. All content is for educational and cultural purposes only.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Pagefind script (loaded after build; no-op in dev) -->
+  <script is:inline>
+    window.addEventListener('DOMContentLoaded', () => {
+      if (window.PagefindUI) {
+        new PagefindUI({ element: '#pagefind-search', showImages: false });
+      }
+    });
+  </script>
+  <script src="/pagefind/pagefind-ui.js" is:inline defer></script>
+</body>
+</html>

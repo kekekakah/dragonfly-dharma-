@@ -1,0 +1,150 @@
+---
+import BaseLayout from './BaseLayout.astro';
+
+interface Props {
+  title: string;
+  titleZh: string;
+  season: string;
+  food: string[];
+  topic: string[];
+  organ?: string[];
+  classicalQuote: string;
+  classicalQuoteSource: string;
+  classicalQuoteZh?: string;
+  summary: string;
+  summaryZh: string;
+  lang?: 'en' | 'zh';
+  publishDate: Date;
+}
+
+const {
+  title,
+  titleZh,
+  season,
+  food,
+  topic,
+  organ = [],
+  classicalQuote,
+  classicalQuoteSource,
+  classicalQuoteZh,
+  summary,
+  summaryZh,
+  lang = 'en',
+  publishDate,
+} = Astro.props;
+
+const isZh = lang === 'zh';
+
+const seasonLabels: Record<string, { en: string; zh: string }> = {
+  spring:       { en: 'Spring · 春', zh: '春季' },
+  summer:       { en: 'Summer · 夏', zh: '夏季' },
+  'late-summer':{ en: 'Late Summer · 长夏', zh: '长夏' },
+  autumn:       { en: 'Autumn · 秋', zh: '秋季' },
+  winter:       { en: 'Winter · 冬', zh: '冬季' },
+  all:          { en: 'All Seasons · 四时', zh: '四时' },
+};
+
+const seasonLabel = seasonLabels[season] ?? { en: season, zh: season };
+const formattedDate = publishDate.toLocaleDateString(isZh ? 'zh-CN' : 'en-US', {
+  year: 'numeric', month: 'long', day: 'numeric',
+});
+---
+
+<BaseLayout
+  title={title}
+  titleZh={titleZh}
+  description={isZh ? summaryZh : summary}
+  lang={lang}
+>
+  <article data-season={season} data-pagefind-body>
+    <!-- Article Header -->
+    <div class="article-header">
+      <div class="container">
+        <div class="article-header__season">{isZh ? seasonLabel.zh : seasonLabel.en}</div>
+        <h1 class="article-header__title-zh">{titleZh}</h1>
+        <p class="article-header__title-en">{title}</p>
+        <div class="article-header__meta">
+          {food.map(f => (
+            <span class="article-header__meta-tag" data-pagefind-filter="food">{f}</span>
+          ))}
+          {topic.map(t => (
+            <span class="article-header__meta-tag" data-pagefind-filter="topic">{t}</span>
+          ))}
+          {organ.map(o => (
+            <span class="article-header__meta-tag" data-pagefind-filter="organ">{o}</span>
+          ))}
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+      <!-- Classical Quote Block -->
+      <blockquote class="classical-quote" data-pagefind-ignore="all">
+        <p class="classical-quote__text">{classicalQuote}</p>
+        {classicalQuoteZh && isZh && (
+          <p class="classical-quote__text" style="font-size: 0.95rem; color: var(--color-ink-muted); margin-top: 0.5rem;">{classicalQuoteZh}</p>
+        )}
+        <footer class="classical-quote__source">— {classicalQuoteSource}</footer>
+      </blockquote>
+
+      <!-- Main Content Slot (MDX body) -->
+      <div class="article-body">
+        <slot />
+      </div>
+
+      <!-- Community CTA Placeholder -->
+      <!-- ╔══════════════════════════════════════════════════════════╗ -->
+      <!-- ║  KAJABI / MAKE.COM INTEGRATION PLACEHOLDER              ║ -->
+      <!-- ║  Wire this email form to Kajabi via Make.com LATER.     ║ -->
+      <!-- ║  Do NOT integrate Kajabi in this validation shell.      ║ -->
+      <!-- ╚══════════════════════════════════════════════════════════╝ -->
+      <div class="community-cta">
+        <span class="community-cta__placeholder-badge">Kajabi CTA — Placeholder</span>
+        <h3 class="community-cta__title-zh">加入食养社群</h3>
+        <p class="community-cta__title-en">Join the Seasonal Nourishment Community</p>
+        <p class="community-cta__desc">
+          {isZh
+            ? '订阅每月节气食养通讯，获取食谱、典籍解读与实践指南。'
+            : 'Subscribe for monthly seasonal nourishment letters — recipes, classical readings, and practical guides.'}
+        </p>
+        <!-- Email capture form — NOT yet wired to Kajabi/Make.com -->
+        <form class="email-capture" onsubmit="return false;" aria-label="Email signup placeholder">
+          <input
+            type="email"
+            placeholder={isZh ? '您的电子邮件' : 'your@email.com'}
+            aria-label="Email address"
+            disabled
+          />
+          <button type="submit" class="btn" disabled>
+            {isZh ? '即将开放' : 'Coming Soon'}
+          </button>
+        </form>
+        <p style="font-size: 0.72rem; color: var(--color-ink-light); margin-top: 0.75rem; margin-bottom: 0;">
+          {isZh
+            ? '（此功能即将上线，敬请期待）'
+            : '(Integration with Kajabi coming soon — placeholder only)'}
+        </p>
+      </div>
+
+      <!-- Sources & Disclaimer -->
+      <div class="article-sources">
+        <h4>{isZh ? '文献来源' : 'Sources & References'}</h4>
+        <p>
+          {isZh
+            ? `本文引用：${classicalQuoteSource}。所有古典文献均为教育目的引用。`
+            : `Classical source cited: ${classicalQuoteSource}. All classical texts are cited for educational purposes.`}
+        </p>
+        <p style="margin-top: 0.5rem;">
+          <strong>
+            {isZh
+              ? '仅供教育与文化参考，非医疗建议、诊断或治疗，请咨询持牌专业人士。'
+              : 'Educational & cultural reference only — not medical advice, diagnosis, or treatment. Consult a licensed practitioner.'}
+          </strong>
+        </p>
+        <p style="font-size: 0.75rem; margin-top: 0.5rem; color: var(--color-ink-light);">
+          {isZh ? `发布日期：${formattedDate}` : `Published: ${formattedDate}`}
+        </p>
+      </div>
+    </div>
+  </article>
+</BaseLayout>

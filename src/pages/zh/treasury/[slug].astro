@@ -1,0 +1,34 @@
+---
+import { getCollection, render } from 'astro:content';
+import ArticleLayout from '../../../layouts/ArticleLayout.astro';
+
+export async function getStaticPaths() {
+  const entries = await getCollection('treasury', ({ data }) => !data.draft);
+  return entries.map(entry => ({
+    params: { slug: entry.id },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const { data } = entry;
+---
+
+<ArticleLayout
+  title={data.title}
+  titleZh={data.titleZh}
+  season={data.season}
+  food={data.food}
+  topic={data.topic}
+  organ={data.organ}
+  classicalQuote={data.classicalQuote}
+  classicalQuoteSource={data.classicalQuoteSource}
+  classicalQuoteZh={data.classicalQuoteZh}
+  summary={data.summary}
+  summaryZh={data.summaryZh}
+  lang="zh"
+  publishDate={data.publishDate}
+>
+  <Content />
+</ArticleLayout>

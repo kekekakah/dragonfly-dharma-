@@ -1,0 +1,125 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+const allEntries = await getCollection('treasury', ({ data }) => !data.draft);
+
+const byTopic: Record<string, typeof allEntries> = {};
+const byFood: Record<string, typeof allEntries> = {};
+const bySeason: Record<string, typeof allEntries> = {};
+
+for (const entry of allEntries) {
+  const s = entry.data.season;
+  if (!bySeason[s]) bySeason[s] = [];
+  bySeason[s].push(entry);
+
+  for (const t of entry.data.topic) {
+    if (!byTopic[t]) byTopic[t] = [];
+    byTopic[t].push(entry);
+  }
+
+  for (const f of entry.data.food) {
+    if (!byFood[f]) byFood[f] = [];
+    byFood[f].push(entry);
+  }
+}
+
+const seasonOrder = ['spring', 'summer', 'late-summer', 'autumn', 'winter', 'all'];
+const seasonLabels: Record<string, string> = {
+  spring: 'Spring · 春',
+  summer: 'Summer · 夏',
+  'late-summer': 'Late Summer · 长夏',
+  autumn: 'Autumn · 秋',
+  winter: 'Winter · 冬',
+  all: 'All Seasons · 四时',
+};
+const seasonColors: Record<string, string> = {
+  spring: '#6b8f5e',
+  summer: '#c0392b',
+  'late-summer': '#c8860a',
+  autumn: '#b05c1a',
+  winter: '#3a5a7c',
+  all: '#5a4e3a',
+};
+---
+
+<BaseLayout
+  title="Browse by Topic, Food & Season"
+  titleZh="按类浏览"
+  description="Browse the Dragonfly Dharma 食养 Treasury by season, food ingredient, or topic."
+  lang="en"
+>
+  <div class="page-hero" style="padding: var(--space-2xl) 0 var(--space-xl);">
+    <div class="container">
+      <h1 class="page-hero__title-zh">按类浏览</h1>
+      <p class="page-hero__title-en">Browse by Season, Food & Topic</p>
+    </div>
+  </div>
+
+  <div class="container" style="padding-top: var(--space-2xl); padding-bottom: var(--space-3xl);">
+
+    <section class="article-section" style="margin-bottom: var(--space-3xl);">
+      <div class="article-section__label">
+        <span class="article-section__label-zh">按季节</span>
+        <span class="article-section__label-en">By Season</span>
+      </div>
+      <div style="display: flex; flex-wrap: wrap; gap: 0.75rem;">
+        {seasonOrder.filter(s => bySeason[s]).map(s => (
+          <a
+            href={`/treasury/?season=${s}`}
+            class="filter-tag filter-tag--season"
+            style={`--season-color: ${seasonColors[s]}; font-size: 0.88rem; padding: 6px 16px;`}
+          >
+            {seasonLabels[s]}
+            <span style="opacity: 0.7; margin-left: 4px;">({bySeason[s].length})</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <section class="article-section" style="margin-bottom: var(--space-3xl);">
+      <div class="article-section__label">
+        <span class="article-section__label-zh">按主题</span>
+        <span class="article-section__label-en">By Topic</span>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem;">
+        {Object.entries(byTopic).sort().map(([topic, entries]) => (
+          <div style="background: var(--color-paper-dark); border: 1px solid var(--color-divider); border-radius: 4px; padding: 1rem;">
+            <h3 style="font-size: 0.95rem; font-family: var(--font-sans); font-weight: 500; color: var(--color-ink); margin-bottom: 0.5rem;">{topic}</h3>
+            <ul style="list-style: none; display: flex; flex-direction: column; gap: 4px;">
+              {entries.map(e => (
+                <li>
+                  <a href={`/treasury/${e.id}/`} style="font-size: 0.82rem; color: var(--color-ink-muted);">
+                    {e.data.titleZh}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <section class="article-section">
+      <div class="article-section__label">
+        <span class="article-section__label-zh">按食材</span>
+        <span class="article-section__label-en">By Food Ingredient</span>
+      </div>
+      <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+        {Object.entries(byFood).sort().map(([food, entries]) => (
+          <span
+            class="card__tag"
+            style="font-size: 0.82rem; padding: 4px 12px; cursor: default;"
+            title={entries.map(e => e.data.titleZh).join(', ')}
+          >
+            {food} ({entries.length})
+          </span>
+        ))}
+      </div>
+      {Object.keys(byFood).length === 0 && (
+        <p style="color: var(--color-ink-light); font-style: italic;">Content coming soon.</p>
+      )}
+    </section>
+
+  </div>
+</BaseLayout>
